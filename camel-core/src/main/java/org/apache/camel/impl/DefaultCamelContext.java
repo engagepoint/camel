@@ -2091,7 +2091,7 @@ public class DefaultCamelContext extends ServiceSupport implements ModelCamelCon
                 // but only add if we haven't already registered it before (we dont want to double add when restarting)
                 boolean found = false;
                 for (RouteStartupOrder other : routeStartupOrder) {
-                    if (other.getRoute().getId() == route.getId()) {
+                    if (other.getRoute().getId().equals(route.getId())) {
                         found = true;
                         break;
                     }

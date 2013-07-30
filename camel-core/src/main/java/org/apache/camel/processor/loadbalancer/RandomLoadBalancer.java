@@ -16,6 +16,7 @@
  */
 package org.apache.camel.processor.loadbalancer;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
@@ -29,7 +30,7 @@ import org.apache.camel.Processor;
  */
 public class RandomLoadBalancer extends QueueLoadBalancer {
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     protected synchronized Processor chooseProcessor(List<Processor> processors, Exchange exchange) {
         int size = processors.size();

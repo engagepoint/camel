@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.StartupListener;
@@ -445,8 +446,14 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
                 prop.load(is);
             } catch (IOException e) {
                 throw new SchedulerException("Error loading Quartz properties file from classpath: org/quartz/quartz.properties", e);
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    LOG.warn("Error closing quartz.properties input stream");
+                }
             }
-
+            
             // camel context name will be a suffix to use one scheduler per context
             String identity = getCamelContext().getName();
 

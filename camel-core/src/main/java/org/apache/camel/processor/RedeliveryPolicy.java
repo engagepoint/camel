@@ -17,6 +17,7 @@
 package org.apache.camel.processor;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.Random;
 
 import org.apache.camel.Exchange;
@@ -523,7 +524,7 @@ public class RedeliveryPolicy implements Cloneable, Serializable {
 
     protected static synchronized Random getRandomNumberGenerator() {
         if (randomNumberGenerator == null) {
-            randomNumberGenerator = new Random();
+            randomNumberGenerator = new SecureRandom();
         }
         return randomNumberGenerator;
     }

@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Stack;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +82,8 @@ public final class FileUtil {
         } else if (prefix.length() < 3) {
             prefix = prefix + "camel";
         }
-
+        prefix = prefix.concat(UUID.randomUUID().toString());
+        
         // create parent folder
         parent.mkdirs();
 

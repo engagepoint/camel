@@ -21,10 +21,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Stack;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +82,8 @@ public final class FileUtil {
         } else if (prefix.length() < 3) {
             prefix = prefix + "camel";
         }
-
+        prefix = prefix.concat(UUID.randomUUID().toString());
+        
         // create parent folder
         parent.mkdirs();
 
@@ -284,7 +287,7 @@ public final class FileUtil {
         }
 
         // create a sub folder with a random number
-        Random ran = new Random();
+        Random ran = new SecureRandom();
         int x = ran.nextInt(1000000);
 
         File f = new File(s, "camel-tmp-" + x);

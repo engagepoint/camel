@@ -16,6 +16,7 @@
  */
 package org.apache.camel.impl.converter;
 
+import org.apache.camel.util.EnvUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -167,15 +168,13 @@ public class AnnotationTypeConverterLoader implements TypeConverterLoader {
                 Class<?> clazz = null;
                 for (ClassLoader loader : resolver.getClassLoaders()) {
                     try {
-                        if (isValidClass(name, packageNames)) {
+                        if(EnvUtils.isValidJavaIdentifier(name)){
                             clazz = loader.loadClass(name);
-                            if (test.matches(clazz)) {
-                                LOG.trace("Loaded {} as class {}", name, clazz);
-                                classes.add(clazz);
-                            }
+                            LOG.trace("Loaded {} as class {}", name, clazz);
+                            classes.add(clazz);
                             // class founder, so no need to load it with another class loader
                             break;
-                        }
+                        }                       
                     } catch (Throwable e) {
                         // do nothing here
                     }

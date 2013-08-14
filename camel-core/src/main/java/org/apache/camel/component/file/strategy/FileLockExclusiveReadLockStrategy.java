@@ -58,9 +58,10 @@ public class FileLockExclusiveReadLockStrategy extends MarkerFileExclusiveReadLo
 
         LOG.trace("Waiting for exclusive read lock to file: {}", target);
 
+        FileChannel channel = null;
         try {
             // try to acquire rw lock on the file before we can consume it
-            FileChannel channel = new RandomAccessFile(target, "rw").getChannel();
+            channel = new RandomAccessFile(target, "rw").getChannel();
 
             boolean exclusive = false;
             StopWatch watch = new StopWatch();
@@ -106,6 +107,10 @@ public class FileLockExclusiveReadLockStrategy extends MarkerFileExclusiveReadLo
             if (interrupted) {
                 // we were interrupted while sleeping, we are likely being shutdown so return false
                 return false;
+            }
+        } finally {
+            if (channel != null) {
+                channel.close();
             }
         }
 

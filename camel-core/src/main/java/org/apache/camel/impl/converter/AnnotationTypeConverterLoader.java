@@ -168,13 +168,15 @@ public class AnnotationTypeConverterLoader implements TypeConverterLoader {
                 Class<?> clazz = null;
                 for (ClassLoader loader : resolver.getClassLoaders()) {
                     try {
-                        if(EnvUtils.isValidJavaIdentifier(name)){
-                            clazz = loader.loadClass(name);
-                            LOG.trace("Loaded {} as class {}", name, clazz);
-                            classes.add(clazz);
-                            // class founder, so no need to load it with another class loader
-                            break;
-                        }                       
+                        if(!EnvUtils.isValidJavaIdentifier(name)){
+                            throw new ClassNotFoundException("not a valid identifier [" + name + "]");
+                        }
+                        clazz = loader.loadClass(name);
+                        LOG.trace("Loaded {} as class {}", name, clazz);
+                        classes.add(clazz);
+                        // class founder, so no need to load it with another class loader
+                        break;
+                   
                     } catch (Throwable e) {
                         // do nothing here
                     }

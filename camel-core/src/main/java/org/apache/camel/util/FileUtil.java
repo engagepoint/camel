@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Stack;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +40,8 @@ public final class FileUtil {
     private static final transient Logger LOG = LoggerFactory.getLogger(FileUtil.class);
     private static final int RETRY_SLEEP_MILLIS = 10;
     private static File defaultTempDir;
+    private static final SecureRandom SUFFIX_RANDOM = new SecureRandom();
+    private static final SecureRandom PREFIX_RANDOM = new SecureRandom();
 
     private FileUtil() {
     }
@@ -75,14 +76,14 @@ public final class FileUtil {
         File parent = (parentDir == null) ? getDefaultTempDir() : parentDir;
             
         if (suffix == null) {
-            suffix = ".tmp";
+            suffix = "";
         }
+        suffix += Long.toString(SUFFIX_RANDOM.nextLong());
+        
         if (prefix == null) {
-            prefix = "camel";
-        } else if (prefix.length() < 3) {
-            prefix = prefix + "camel";
-        }
-        prefix = prefix.concat(UUID.randomUUID().toString());
+            prefix = "";
+        } 
+        prefix += Long.toString(PREFIX_RANDOM.nextLong());
         
         // create parent folder
         parent.mkdirs();

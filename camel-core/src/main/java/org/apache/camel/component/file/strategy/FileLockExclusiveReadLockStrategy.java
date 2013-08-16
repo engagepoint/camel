@@ -1,18 +1,14 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under
+ * the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS
+ * IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.apache.camel.component.file.strategy;
 
@@ -22,6 +18,7 @@ import java.io.RandomAccessFile;
 import java.nio.channels.Channel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.text.MessageFormat;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.component.file.GenericFile;
@@ -33,11 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Acquires exclusive read lock to the given file. Will wait until the lock is granted.
- * After granting the read lock it is released, we just want to make sure that when we start
- * consuming the file its not currently in progress of being written by third party.
+ * Acquires exclusive read lock to the given file. Will wait until the lock is granted. After granting the read lock it is
+ * released, we just want to make sure that when we start consuming the file its not currently in progress of being written by
+ * third party.
  */
 public class FileLockExclusiveReadLockStrategy extends MarkerFileExclusiveReadLockStrategy {
+
     private static final transient Logger LOG = LoggerFactory.getLogger(FileLockExclusiveReadLockStrategy.class);
     private long timeout;
     private long checkInterval = 1000;
@@ -59,9 +57,11 @@ public class FileLockExclusiveReadLockStrategy extends MarkerFileExclusiveReadLo
         LOG.trace("Waiting for exclusive read lock to file: {}", target);
 
         FileChannel channel = null;
+        RandomAccessFile randomAccessFile = null;
         try {
+            randomAccessFile = new RandomAccessFile(target, "rw");
             // try to acquire rw lock on the file before we can consume it
-            channel = new RandomAccessFile(target, "rw").getChannel();
+            channel = randomAccessFile.getChannel();
 
             boolean exclusive = false;
             StopWatch watch = new StopWatch();
@@ -109,8 +109,22 @@ public class FileLockExclusiveReadLockStrategy extends MarkerFileExclusiveReadLo
                 return false;
             }
         } finally {
-            if (channel != null) {
-                channel.close();
+            // Close channel
+            try {
+                if (channel != null) {
+                    channel.close();
+                }
+            } catch (IOException ioe) {
+                LOG.warn(MessageFormat.format("Unable to close channel for file [{0}]!", file.getAbsoluteFilePath()), ioe);
+            }
+
+            // Close file
+            try {
+                if (randomAccessFile != null) {
+                    randomAccessFile.close();
+                }
+            } catch (IOException ioe) {
+                LOG.warn(MessageFormat.format("Unable to close file [{0}]!", file.getAbsoluteFilePath()), ioe);
             }
         }
 
@@ -118,7 +132,7 @@ public class FileLockExclusiveReadLockStrategy extends MarkerFileExclusiveReadLo
     }
 
     public void releaseExclusiveReadLock(GenericFileOperations<File> operations,
-                                         GenericFile<File> file, Exchange exchange) throws Exception {
+            GenericFile<File> file, Exchange exchange) throws Exception {
 
         // must call super
         super.releaseExclusiveReadLock(operations, file, exchange);

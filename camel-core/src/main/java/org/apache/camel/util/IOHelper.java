@@ -110,13 +110,13 @@ public final class IOHelper {
      * instance of {@link BufferedReader} returns the same passed
      * <code>reader</code> reference as is (avoiding double wrapping).
      * 
-     * @param reader the wrapee to be used for the buffering support
+     * @param wrap the wrapee to be used for the buffering support
      * @return the passed <code>reader</code> decorated through a
      *         {@link BufferedReader} object as wrapper
      */
-    public static BufferedReader buffered(Reader reader) {
-        ObjectHelper.notNull(reader, "reader");
-        return (reader instanceof BufferedReader) ? (BufferedReader)reader : new BufferedReader(reader);
+    public static BufferedReader buffered(Reader wrap) {
+        ObjectHelper.notNull(wrap, "reader");
+        return (wrap instanceof BufferedReader) ? (BufferedReader)wrap : new BufferedReader(wrap);
     }
 
     /**

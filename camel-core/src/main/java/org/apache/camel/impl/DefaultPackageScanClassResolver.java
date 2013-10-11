@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -476,7 +477,10 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
                     log.trace("Testing for class {} matches criteria [{}] using classloader: {}", new Object[]{externalName, test, classLoader});
                 }
                 try {
-                    Class<?> type = classLoader.loadClass(externalName);
+                    Class<?> type = ObjectHelper.loadClass(externalName, classLoader);
+                    if (type == null) {
+                        throw new ClassNotFoundException(MessageFormat.format("Unable to load class [{0}]!", externalName));
+                    }
                     log.trace("Loaded the class: {} in classloader: {}", type, classLoader);
                     if (test.matches(type)) {
                         log.trace("Found class: {} which matches the filter in classloader: {}", type, classLoader);

@@ -1,18 +1,18 @@
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.camel.component.quartz;
 
@@ -47,11 +47,14 @@ import org.slf4j.LoggerFactory;
  * A <a href="http://camel.apache.org/quartz.html">Quartz Component</a>
  * <p/>
  * For a brief tutorial on setting cron expression see
- * <a href="http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger">Quartz cron tutorial</a>.
+ * <a
+ * href="http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger">Quartz
+ * cron tutorial</a>.
  *
  * @version
  */
 public class QuartzComponent extends DefaultComponent implements StartupListener {
+
     private static final Logger LOG = LoggerFactory.getLogger(QuartzComponent.class);
     private Scheduler scheduler;
     private final List<JobToAdd> jobsToAdd = new ArrayList<JobToAdd>();
@@ -63,6 +66,7 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
     private boolean enableJmx = true;
 
     private static final class JobToAdd {
+
         private final JobDetail job;
         private final Trigger trigger;
 
@@ -101,7 +105,7 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
                 LOG.warn("A Quartz job is already started. Cannot apply the 'startDelayedSeconds' configuration!");
             } else if (this.startDelayedSeconds != 0 && !(this.startDelayedSeconds == startDelayedSeconds)) {
                 LOG.warn("A Quartz job is already configured with a different 'startDelayedSeconds' configuration! "
-                    + "All Quartz jobs must share the same 'startDelayedSeconds' configuration! Cannot apply the 'startDelayedSeconds' configuration!");
+                        + "All Quartz jobs must share the same 'startDelayedSeconds' configuration! Cannot apply the 'startDelayedSeconds' configuration!");
             } else {
                 this.startDelayedSeconds = startDelayedSeconds;
             }
@@ -344,7 +348,7 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
                     getScheduler().startDelayed(getStartDelayedSeconds());
                 } catch (NoSuchMethodError e) {
                     LOG.warn("Your version of Quartz is too old to support delayed startup! "
-                        + "Starting Quartz scheduler immediately : " + getScheduler().getSchedulerName());
+                            + "Starting Quartz scheduler immediately : " + getScheduler().getSchedulerName());
                     getScheduler().start();
                 }
             } else {
@@ -356,7 +360,6 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
 
     // Properties
     // -------------------------------------------------------------------------
-
     public SchedulerFactory getFactory() throws SchedulerException {
         if (factory == null) {
             factory = createSchedulerFactory();
@@ -421,7 +424,6 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
 
     // Implementation methods
     // -------------------------------------------------------------------------
-
     protected Properties loadProperties() throws SchedulerException {
         Properties answer = getProperties();
         if (answer == null && getPropertiesFile() != null) {
@@ -475,6 +477,12 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
                 prop.load(is);
             } catch (IOException e) {
                 throw new SchedulerException("Error loading Quartz properties file from classpath: org/quartz/quartz.properties", e);
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    LOG.warn("Error closing quartz.properties input stream");
+                }
             }
 
             // camel context name will be a suffix to use one scheduler per context
@@ -550,5 +558,4 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
             number.incrementAndGet();
         }
     }
-
 }

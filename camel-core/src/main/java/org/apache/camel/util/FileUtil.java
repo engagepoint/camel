@@ -45,6 +45,8 @@ public final class FileUtil {
     private static final File USER_DIR = new File(System.getProperty(USER_DIR_KEY));
     private static File defaultTempDir;
     private static Thread shutdownHook;
+    private static final SecureRandom SUFFIX_RANDOM = new SecureRandom();
+    private static final SecureRandom PREFIX_RANDOM = new SecureRandom();
 
     private FileUtil() {
         // Utils method
@@ -88,11 +90,14 @@ public final class FileUtil {
         if (suffix == null) {
             suffix = ".tmp";
         }
+        suffix = Long.toString(SUFFIX_RANDOM.nextLong()) + suffix;
+        
         if (prefix == null) {
             prefix = "camel";
         } else if (prefix.length() < 3) {
             prefix = prefix + "camel";
-        }
+         } 
+         prefix += Long.toString(PREFIX_RANDOM.nextLong());
 
         // create parent folder
         parent.mkdirs();

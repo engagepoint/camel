@@ -45,6 +45,7 @@ import org.apache.camel.util.GZIPHelper;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.MessageHelper;
 import org.apache.camel.util.ObjectHelper;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -284,7 +285,7 @@ public class DefaultHttpBinding implements HttpBinding {
                 String headerValue = exchange.getContext().getTypeConverter().convertTo(String.class, it.next());
                 if (headerValue != null && headerFilterStrategy != null
                         && !headerFilterStrategy.applyFilterToCamelHeaders(key, headerValue, exchange)) {
-                    response.addHeader(key, headerValue);
+                    response.addHeader(key, StringEscapeUtils.escapeJava(headerValue));
                 }
             }
         }

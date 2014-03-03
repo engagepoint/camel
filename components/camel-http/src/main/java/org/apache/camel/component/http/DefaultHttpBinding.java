@@ -285,7 +285,7 @@ public class DefaultHttpBinding implements HttpBinding {
                 String headerValue = exchange.getContext().getTypeConverter().convertTo(String.class, it.next());
                 if (headerValue != null && headerFilterStrategy != null
                         && !headerFilterStrategy.applyFilterToCamelHeaders(key, headerValue, exchange)) {
-                    response.addHeader(key, StringEscapeUtils.escapeJava(headerValue));
+                    response.addHeader(StringEscapeUtils.escapeJava(key), StringEscapeUtils.escapeJava(headerValue));
                 }
             }
         }

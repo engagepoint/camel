@@ -25,7 +25,7 @@
 
   <groupId>org.apache.camel</groupId>
   <artifactId>camel</artifactId>
-  <version>2.9.2</version>
+  <version>2.9.2-ep</version>
   <packaging>pom</packaging>
   <name>Camel</name>
   <description>Camel build POM</description>
@@ -109,20 +109,13 @@
          </pluginRepository>
   </pluginRepositories>
   <modules>
-    <module>buildingtools</module>
-    <module>parent</module>
     <module>camel-core</module>
-    <module>components</module>
-    <module>platforms</module>
-    <module>tooling</module>
-    <module>tests</module>
-    <module>examples</module>
   </modules>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/camel/tags/camel-2.9.2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/camel/tags/camel-2.9.2</developerConnection>
-    <url>http://svn.apache.org/viewvc/camel/tags/camel-2.9.2</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/camel/tags/camel-2.9.2-ep</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/camel/tags/camel-2.9.2-ep</developerConnection>
+    <url>http://svn.apache.org/viewvc/camel/tags/camel-2.9.2-ep</url>
   </scm>
 
   <build>
@@ -599,9 +592,6 @@
           <name>!noassembly</name>
         </property>
       </activation>
-      <modules>
-        <module>apache-camel</module>
-      </modules>
     </profile>
     <profile>
       <id>setup.eclipse</id>

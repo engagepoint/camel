@@ -16,18 +16,18 @@
  */
 package org.apache.camel.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Random;
 import java.util.Stack;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * File utilities
@@ -84,7 +84,18 @@ public final class FileUtil {
         // create parent folder
         parent.mkdirs();
 
-        return File.createTempFile(prefix, suffix, parent);
+        return generateFile(prefix, suffix, parent);
+    }
+
+    private static File generateFile(String s, String s1, File file)
+            throws IOException
+    {
+        long l = new SecureRandom().nextLong();
+        if(l == 0x8000000000000000L)
+            l = 0L;
+        else
+            l = Math.abs(l);
+        return new File(file, (new StringBuilder()).append(s).append(Long.toString(l)).append(s1).toString());
     }
 
     /**
@@ -262,7 +273,7 @@ public final class FileUtil {
         }
 
         // create a sub folder with a random number
-        Random ran = new Random();
+        SecureRandom ran = new SecureRandom();
         int x = ran.nextInt(1000000);
 
         File f = new File(s, "camel-tmp-" + x);

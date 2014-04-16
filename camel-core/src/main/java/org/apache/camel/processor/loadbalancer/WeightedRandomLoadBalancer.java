@@ -16,6 +16,7 @@
  */
 package org.apache.camel.processor.loadbalancer;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
@@ -23,7 +24,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
 public class WeightedRandomLoadBalancer extends WeightedLoadBalancer {
-    private final Random rnd = new Random();
+    private final Random rnd = new SecureRandom();
     private final int distributionRatioSum;
     private int runtimeRatioSum;
     

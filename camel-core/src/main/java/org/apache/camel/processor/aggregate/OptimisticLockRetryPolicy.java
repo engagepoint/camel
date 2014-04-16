@@ -16,6 +16,7 @@
  */
 package org.apache.camel.processor.aggregate;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -61,7 +62,7 @@ public class OptimisticLockRetryPolicy {
         if (retryDelay > 0 || randomBackOff) {
             long sleepFor;
             sleepFor = exponentialBackOff ? (retryDelay << retryCounter)
-                    : (randomBackOff ? new Random().nextInt((int)(maximumRetryDelay > 0 ? maximumRetryDelay : DEFAULT_MAXIMUM_RETRY_DELAY)) : retryDelay);
+                    : (randomBackOff ? new SecureRandom().nextInt((int)(maximumRetryDelay > 0 ? maximumRetryDelay : DEFAULT_MAXIMUM_RETRY_DELAY)) : retryDelay);
             if (maximumRetryDelay > 0 && sleepFor > maximumRetryDelay) {
                 sleepFor = maximumRetryDelay;
             }

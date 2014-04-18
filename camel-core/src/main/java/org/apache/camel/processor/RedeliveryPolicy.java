@@ -16,15 +16,16 @@
  */
 package org.apache.camel.processor;
 
-import java.io.Serializable;
-import java.util.Random;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * The policy used to decide how many times to redeliver and the time between
@@ -523,7 +524,7 @@ public class RedeliveryPolicy implements Cloneable, Serializable {
 
     protected static synchronized Random getRandomNumberGenerator() {
         if (randomNumberGenerator == null) {
-            randomNumberGenerator = new Random();
+            randomNumberGenerator = new SecureRandom();
         }
         return randomNumberGenerator;
     }

@@ -16,27 +16,7 @@
  */
 package org.apache.camel.impl.converter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-import static java.lang.reflect.Modifier.isAbstract;
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
-
-import org.apache.camel.Converter;
-import org.apache.camel.Exchange;
-import org.apache.camel.FallbackConverter;
-import org.apache.camel.TypeConverter;
-import org.apache.camel.TypeConverterLoaderException;
+import org.apache.camel.*;
 import org.apache.camel.spi.PackageScanClassResolver;
 import org.apache.camel.spi.TypeConverterLoader;
 import org.apache.camel.spi.TypeConverterRegistry;
@@ -46,6 +26,15 @@ import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.StringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.*;
+
+import static java.lang.reflect.Modifier.*;
 
 /**
  * A class which will auto-discover {@link Converter} objects and methods to pre-load
@@ -196,13 +185,15 @@ public class AnnotationTypeConverterLoader implements TypeConverterLoader {
      * @throws IOException is thrown for IO related errors
      */
     protected String[] findPackageNames() throws IOException {
-        Set<String> packages = new HashSet<String>();
-        ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-        if (ccl != null) {
-            findPackages(packages, ccl);
-        }
-        findPackages(packages, getClass().getClassLoader());
-        return packages.toArray(new String[packages.size()]);
+        //hacked for VERACODE
+//        Set<String> packages = new HashSet<String>();
+//        ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+//        if (ccl != null) {
+//            findPackages(packages, ccl);
+//        }
+//        findPackages(packages, getClass().getClassLoader());
+//        return packages.toArray(new String[packages.size()]);
+        return new String[]{"org.apache.camel.core"};
     }
 
     protected void findPackages(Set<String> packages, ClassLoader classLoader) throws IOException {

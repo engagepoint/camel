@@ -16,14 +16,15 @@
  */
 package org.apache.camel.processor.loadbalancer;
 
-import java.util.List;
-import java.util.Random;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
+import java.security.SecureRandom;
+import java.util.List;
+
 public class WeightedRandomLoadBalancer extends WeightedLoadBalancer {
     private int randomCounter;
+    private SecureRandom secureRandom = new SecureRandom();
     
     public WeightedRandomLoadBalancer(List<Integer> distributionRatioList) {
         super(distributionRatioList);
@@ -39,7 +40,7 @@ public class WeightedRandomLoadBalancer extends WeightedLoadBalancer {
             
             randomCounter = 0;
             if (getRuntimeRatios().size() > 0) {
-                randomCounter = new Random().nextInt(getRuntimeRatios().size());
+                randomCounter = secureRandom.nextInt(getRuntimeRatios().size());
             } 
                 
             if (getRuntimeRatios().get(randomCounter).getRuntimeWeight() > 0) {

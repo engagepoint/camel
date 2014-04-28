@@ -33,17 +33,16 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.camel.Exchange;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * IO helper class.
  *
- * @version 
+ * @version
  */
 public final class IOHelper {
-    
+
     private static final transient Logger LOG = LoggerFactory.getLogger(IOHelper.class);
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
     private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
@@ -51,7 +50,7 @@ public final class IOHelper {
     private IOHelper() {
         // Utility Class
     }
-    
+
     /**
      * Use this function instead of new String(byte[]) to avoid surprises from non-standard default encodings.
      */
@@ -80,7 +79,7 @@ public final class IOHelper {
      * object and returns that. If the passed <code>in</code> is already an
      * instance of {@link BufferedInputStream} returns the same passed
      * <code>in</code> reference as is (avoiding double wrapping).
-     * 
+     *
      * @param in the wrapee to be used for the buffering support
      * @return the passed <code>in</code> decorated through a
      *         {@link BufferedInputStream} object as wrapper
@@ -95,7 +94,7 @@ public final class IOHelper {
      * object and returns that. If the passed <code>out</code> is already an
      * instance of {@link BufferedOutputStream} returns the same passed
      * <code>out</code> reference as is (avoiding double wrapping).
-     * 
+     *
      * @param out the wrapee to be used for the buffering support
      * @return the passed <code>out</code> decorated through a
      *         {@link BufferedOutputStream} object as wrapper
@@ -110,7 +109,7 @@ public final class IOHelper {
      * and returns that. If the passed <code>reader</code> is already an
      * instance of {@link BufferedReader} returns the same passed
      * <code>reader</code> reference as is (avoiding double wrapping).
-     * 
+     *
      * @param wrap the wrapee to be used for the buffering support
      * @return the passed <code>reader</code> decorated through a
      *         {@link BufferedReader} object as wrapper
@@ -125,7 +124,7 @@ public final class IOHelper {
      * and returns that. If the passed <code>writer</code> is already an
      * instance of {@link BufferedWriter} returns the same passed
      * <code>writer</code> reference as is (avoiding double wrapping).
-     * 
+     *
      * @param writer the wrapee to be used for the buffering support
      * @return the passed <code>writer</code> decorated through a
      *         {@link BufferedWriter} object as wrapper
@@ -162,7 +161,7 @@ public final class IOHelper {
     public static int copy(InputStream input, OutputStream output) throws IOException {
         return copy(input, output, DEFAULT_BUFFER_SIZE);
     }
-    
+
     public static int copy(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
         int avail = input.available();
         if (avail > 262144) {
@@ -172,14 +171,10 @@ public final class IOHelper {
             bufferSize = avail;
         }
 
-        byte[] buffer = new byte[bufferSize];
+        final byte[] buffer = new byte[bufferSize];
         int n = input.read(buffer);
         int total = 0;
-        String filteredBuffer;
         while (-1 != n) {
-            filteredBuffer = StringEscapeUtils.escapeJava(new String(buffer));
-            buffer = filteredBuffer.getBytes();
-            n = filteredBuffer.length();
             output.write(buffer, 0, n);
             total += n;
             n = input.read(buffer);
@@ -187,11 +182,11 @@ public final class IOHelper {
         output.flush();
         return total;
     }
-    
+
     public static void copyAndCloseInput(InputStream input, OutputStream output) throws IOException {
         copyAndCloseInput(input, output, DEFAULT_BUFFER_SIZE);
     }
-    
+
     public static void copyAndCloseInput(InputStream input, OutputStream output, int bufferSize) throws IOException {
         copy(input, output, bufferSize);
         close(input, null, LOG);
@@ -353,7 +348,7 @@ public final class IOHelper {
 
     /**
      * Closes the given resources if they are available.
-     * 
+     *
      * @param closeables the objects to close
      */
     public static void close(Closeable... closeables) {
@@ -414,7 +409,7 @@ public final class IOHelper {
             return null;
         }
     }
-    
+
     private static String getDefaultCharsetName() {
         return ObjectHelper.getSystemProperty(Exchange.DEFAULT_CHARSET_PROPERTY, "UTF-8");
     }

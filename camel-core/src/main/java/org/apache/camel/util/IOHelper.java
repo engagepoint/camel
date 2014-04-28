@@ -33,6 +33,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.camel.Exchange;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,10 +172,14 @@ public final class IOHelper {
             bufferSize = avail;
         }
 
-        final byte[] buffer = new byte[bufferSize];
+        byte[] buffer = new byte[bufferSize];
         int n = input.read(buffer);
         int total = 0;
+        String filteredBuffer;
         while (-1 != n) {
+            filteredBuffer = StringEscapeUtils.escapeJava(new String(buffer));
+            buffer = filteredBuffer.getBytes();
+            n = filteredBuffer.length();
             output.write(buffer, 0, n);
             total += n;
             n = input.read(buffer);

@@ -252,10 +252,7 @@ public class DefaultHttpBinding implements HttpBinding {
         } else {
             // write stacktrace as plain text
             response.setContentType("text/plain");
-            PrintWriter pw = response.getWriter();
-            pw.println("Error caused by " + exception.getClass());
             LOG.error("Some unpredictable exception happend", exception);
-            pw.flush();
         }
     }
 

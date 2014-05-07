@@ -39,6 +39,7 @@ import org.apache.camel.impl.DefaultMessage;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.ObjectHelper;
 
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +130,7 @@ public class StreamConsumer extends DefaultConsumer implements Runnable {
             // repeat scanning from stream
             while (isRunAllowed()) {
                 line = br.readLine();
-                LOG.trace("Read line: {}", line);
+                LOG.trace("Read line: {}", Encode.forJava(line));
                 boolean eos = line == null;
                 if (!eos && isRunAllowed()) {
                     processLine(line);
@@ -153,7 +154,7 @@ public class StreamConsumer extends DefaultConsumer implements Runnable {
                 }
 
                 line = br.readLine();
-                LOG.trace("Read line: {}", line);
+                LOG.trace("Read line: {}", Encode.forJava(line));
                 eos = line == null;
                 if (!eos && isRunAllowed()) {
                     processLine(line);

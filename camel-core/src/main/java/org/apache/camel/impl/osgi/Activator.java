@@ -291,7 +291,7 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
 
                     if (StringHelper.hasUpperCase(pkg)) {
                         // its a FQN class name so load it directly
-                        LOG.trace("Loading {} class", pkg);
+                        LOG.trace("Loading {} class", Encode.forJava(pkg));
                         try {
                             Class<?> clazz = bundle.loadClass(pkg);
                             if (test.matches(clazz)) {
@@ -301,7 +301,7 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
                             continue;
                         } catch (Throwable t) {
                             // Ignore
-                            LOG.trace("Failed to load " + pkg + " class due " + t.getMessage() + ". This exception will be ignored.", t);
+                            LOG.trace("Failed to load " + Encode.forJava(pkg) + " class due " + t.getMessage() + ". This exception will be ignored.", t);
                         }
                     }
 

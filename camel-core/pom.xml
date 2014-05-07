@@ -45,6 +45,7 @@
         javax.xml.bind.annotation.adapters;resolution:=optional,
         javax.xml.stream;resolution:=optional,
         javax.xml.transform.stax;resolution:=optional,
+        org.owasp.encoder;resolution:=optional,
         *
     </camel.osgi.import>
     <camel.osgi.dynamic>
@@ -96,14 +97,19 @@
       <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- validator -->
-	<dependency>
-		<groupId>xml-resolver</groupId>
-		<artifactId>xml-resolver</artifactId>
-		<version>${xml-resolver-version}</version>
-		<scope>test</scope>
-	</dependency>
+    <dependency>
+        <groupId>xml-resolver</groupId>
+        <artifactId>xml-resolver</artifactId>
+        <version>${xml-resolver-version}</version>
+        <scope>test</scope>
+    </dependency>
+
+      <dependency>
+          <groupId>org.owasp.encoder</groupId>
+          <artifactId>encoder</artifactId>
+      </dependency>
   </dependencies>
 
 

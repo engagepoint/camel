@@ -49,6 +49,7 @@ import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.LRUSoftCache;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.ServiceHelper;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,7 +212,7 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
     protected void find(PackageScanFilter test, String packageName, ClassLoader loader, Set<Class<?>> classes) {
         if (log.isTraceEnabled()) {
             log.trace("Searching for: {} in package: {} using classloader: {}", 
-                    new Object[]{test, packageName, loader.getClass().getName()});
+                    new Object[]{test, Encode.forJava(packageName), loader.getClass().getName()});
         }
 
         Enumeration<URL> urls;
@@ -221,7 +222,7 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
                 log.trace("No URLs returned by classloader");
             }
         } catch (IOException ioe) {
-            log.warn("Cannot read package: " + packageName, ioe);
+            log.warn("Cannot read package: " + Encode.forJava(packageName), ioe);
             return;
         }
 
@@ -273,7 +274,7 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
                     urlPath = urlPath.substring(0, urlPath.indexOf('!'));
                 }
 
-                log.trace("Scanning for classes in: {} matching criteria: {}", urlPath, test);
+                log.trace("Scanning for classes in: {} matching criteria: {}", Encode.forUri(urlPath), test);
 
                 File file = new File(urlPath);
                 if (file.isDirectory()) {
@@ -401,10 +402,10 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
             entries = doLoadJarClassEntries(stream, urlPath);
             if (jarCache != null) {
                 jarCache.put(urlPath, entries);
-                log.trace("Cached {} JAR with {} entries", urlPath, entries.size());
+                log.trace("Cached {} JAR with {} entries", Encode.forUri(urlPath), entries.size());
             }
         } else {
-            log.trace("Using cached {} JAR with {} entries", urlPath, entries.size());
+            log.trace("Using cached {} JAR with {} entries", Encode.forUri(urlPath), entries.size());
         }
 
         doLoadImplementationsInJar(test, parent, entries, classes);
@@ -435,7 +436,7 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
                 }
             }
         } catch (IOException ioe) {
-            log.warn("Cannot search jar file '" + urlPath + " due to an IOException: " + ioe.getMessage(), ioe);
+            log.warn("Cannot search jar file '" + Encode.forUri(urlPath) + " due to an IOException: " + ioe.getMessage(), ioe);
         } finally {
             IOHelper.close(jarStream, urlPath, log);
         }
@@ -474,7 +475,7 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
             boolean found = false;
             for (ClassLoader classLoader : set) {
                 if (log.isTraceEnabled()) {
-                    log.trace("Testing for class {} matches criteria [{}] using classloader: {}", new Object[]{externalName, test, classLoader});
+                    log.trace("Testing for class {} matches criteria [{}] using classloader: {}", new Object[]{Encode.forJava(externalName), test, classLoader});
                 }
                 try {
                     Class<?> type = ObjectHelper.loadClass(externalName, classLoader);
@@ -490,22 +491,22 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
                     break;
                 } catch (ClassNotFoundException e) {
                     if (log.isTraceEnabled()) {
-                        log.trace("Cannot find class '" + fqn + "' in classloader: " + classLoader
+                        log.trace("Cannot find class '" + Encode.forJava(fqn) + "' in classloader: " + classLoader
                                 + ". Reason: " + e.getMessage(), e);
                     }
                 } catch (NoClassDefFoundError e) {
                     if (log.isTraceEnabled()) {
-                        log.trace("Cannot find the class definition '" + fqn + "' in classloader: " + classLoader
+                        log.trace("Cannot find the class definition '" + Encode.forJava(fqn) + "' in classloader: " + classLoader
                             + ". Reason: " + e.getMessage(), e);
                     }
                 }
             }
             if (!found) {
-                log.debug("Cannot find class '{}' in any classloaders: {}", fqn, set);
+                log.debug("Cannot find class '{}' in any classloaders: {}", Encode.forJava(fqn), set);
             }
         } catch (Exception e) {
             if (log.isWarnEnabled()) {
-                log.warn("Cannot examine class '" + fqn + "' due to a " + e.getClass().getName()
+                log.warn("Cannot examine class '" + Encode.forJava(fqn) + "' due to a " + e.getClass().getName()
                     + " with message: " + e.getMessage(), e);
             }
         }

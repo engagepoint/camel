@@ -16,55 +16,29 @@
  */
 package org.apache.camel.impl.osgi;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.camel.CamelContext;
-import org.apache.camel.Component;
-import org.apache.camel.Converter;
-import org.apache.camel.TypeConverter;
-import org.apache.camel.TypeConverterLoaderException;
+import org.apache.camel.*;
 import org.apache.camel.impl.converter.AnnotationTypeConverterLoader;
 import org.apache.camel.impl.osgi.tracker.BundleTracker;
 import org.apache.camel.impl.osgi.tracker.BundleTrackerCustomizer;
 import org.apache.camel.impl.scan.AnnotatedWithPackageScanFilter;
 import org.apache.camel.model.DataFormatDefinition;
-import org.apache.camel.spi.ComponentResolver;
-import org.apache.camel.spi.DataFormat;
-import org.apache.camel.spi.DataFormatResolver;
-import org.apache.camel.spi.Injector;
-import org.apache.camel.spi.Language;
-import org.apache.camel.spi.LanguageResolver;
-import org.apache.camel.spi.PackageScanFilter;
-import org.apache.camel.spi.TypeConverterLoader;
-import org.apache.camel.spi.TypeConverterRegistry;
+import org.apache.camel.spi.*;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.StringHelper;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.ServiceRegistration;
-
+import org.osgi.framework.*;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.*;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Activator implements BundleActivator, BundleTrackerCustomizer {
 
@@ -344,7 +318,7 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
                             }
                         } catch (Throwable t) {
                             // Ignore
-                            LOG.trace("Failed to load " + externalName + " class due " + t.getMessage() + ". This exception will be ignored.", t);
+                            LOG.trace("Failed to load " + Encode.forJava(externalName) + " class due " + t.getMessage() + ". This exception will be ignored.", t);
                         }
                     }
                 }
@@ -353,7 +327,7 @@ public class Activator implements BundleActivator, BundleTrackerCustomizer {
                 LOG.info("Found {} @Converter classes to load", classes.size());
                 for (Class<?> type : classes) {
                     if (LOG.isTraceEnabled()) {
-                        LOG.trace("Loading converter class: {}", ObjectHelper.name(type));
+                        LOG.trace("Loading converter class: {}", Encode.forJava(ObjectHelper.name(type)));
                     }
                     loadConverterMethods(registry, type);
                 }

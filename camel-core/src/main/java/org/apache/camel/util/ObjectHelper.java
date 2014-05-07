@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 
+import org.owasp.encoder.Encode;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -776,7 +777,7 @@ public final class ObjectHelper {
 
         if (clazz == null) {
             if (needToWarn) {
-                LOG.warn("Cannot find class: " + name);
+                LOG.warn("Cannot find class: " + Encode.forJava(name));
             }
         }
 
@@ -851,11 +852,11 @@ public final class ObjectHelper {
         }
 
         try {
-            LOG.trace("Loading class: {} using classloader: {}", name, loader);
+            LOG.trace("Loading class: {} using classloader: {}", Encode.forJava(name), loader);
             return loader.loadClass(name);
         } catch (ClassNotFoundException e) {
             if (LOG.isTraceEnabled()) {
-                LOG.trace("Cannot load class: " + name + " using classloader: " + loader, e);
+                LOG.trace("Cannot load class: " + Encode.forJava(name) + " using classloader: " + loader, e);
             }
         }
 

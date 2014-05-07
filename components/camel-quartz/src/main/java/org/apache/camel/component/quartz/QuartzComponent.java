@@ -18,6 +18,8 @@ package org.apache.camel.component.quartz;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import org.apache.camel.StartupListener;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.camel.util.IntrospectionSupport;
 import org.apache.camel.util.ObjectHelper;
+import org.owasp.encoder.Encode;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -43,6 +46,7 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.IOUtils;
 
 /**
  * A <a href="http://camel.apache.org/quartz.html">Quartz Component</a>
@@ -473,7 +477,7 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
 
         if (LOG.isDebugEnabled()) {
             String name = prop.getProperty(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME);
-            LOG.debug("Creating SchedulerFactory: {} with properties: {}", name, prop);
+            LOG.debug("Creating SchedulerFactory: {} with properties: {}", Encode.forJava(name), prop);
         }
         return answer;
     }

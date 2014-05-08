@@ -63,6 +63,11 @@
       <version>${commons-codec-version}</version>
     </dependency>
 
+      <dependency>
+          <groupId>org.owasp.encoder</groupId>
+          <artifactId>encoder</artifactId>
+      </dependency>
+
     <!-- testing -->
     <dependency>
       <groupId>org.apache.camel</groupId>

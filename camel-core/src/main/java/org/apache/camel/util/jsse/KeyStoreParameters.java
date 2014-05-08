@@ -187,7 +187,7 @@ public class KeyStoreParameters extends JsseParameters {
             }
             
             LOG.debug("KeyStore [{}], initialized from [{}], is using provider [{}], has type [{}], and contains aliases {}.",
-                      new Object[] {ks, this, ks.getProvider(), ks.getType(), Encode.forJava(Arrays.toString(aliases.toArray()))});
+                      new Object[] {ks, Encode.forJava(this.toString()), Encode.forJava(ks.getProvider().toString()), Encode.forJava(ks.getType()), Encode.forJava(Arrays.toString(aliases.toArray()))});
         }
         
         return ks;

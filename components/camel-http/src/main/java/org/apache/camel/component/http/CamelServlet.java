@@ -32,6 +32,7 @@ import org.apache.camel.component.http.helper.HttpHelper;
 import org.apache.camel.impl.DefaultExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.owasp.encoder.Encode;
 
 /**
  * @version 
@@ -56,19 +57,20 @@ public class CamelServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.trace("Service: {}", request);
+        String encodedRequest = Encode.forJava(request.toString());
+        log.trace("Service: {}", encodedRequest);
 
         // Is there a consumer registered for the request.
         HttpConsumer consumer = resolve(request);
         if (consumer == null) {
-            log.debug("No consumer to service request {}", request);
+            log.debug("No consumer to service request {}", encodedRequest);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }       
         
         // are we suspended?
         if (consumer.isSuspended()) {
-            log.debug("Consumer suspended, cannot service request {}", request);
+            log.debug("Consumer suspended, cannot service request {}", encodedRequest);
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             return;
         }

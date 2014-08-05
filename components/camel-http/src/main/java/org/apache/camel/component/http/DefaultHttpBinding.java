@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,6 +47,7 @@ import org.apache.camel.util.GZIPHelper;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.MessageHelper;
 import org.apache.camel.util.ObjectHelper;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,12 +128,12 @@ public class DefaultHttpBinding implements HttpBinding {
         headers.put(Exchange.CONTENT_TYPE, request.getContentType());
 
         if (LOG.isTraceEnabled()) {
-            LOG.trace("HTTP method {}", request.getMethod());
-            LOG.trace("HTTP query {}", request.getQueryString());
-            LOG.trace("HTTP url {}", request.getRequestURL());
-            LOG.trace("HTTP uri {}", request.getRequestURI().toString());
-            LOG.trace("HTTP path {}", request.getPathInfo());
-            LOG.trace("HTTP content-type {}", request.getContentType());
+            LOG.trace("HTTP method {}", Encode.forJava(request.getMethod()));
+            LOG.trace("HTTP query {}", Encode.forJava(request.getQueryString()));
+            LOG.trace("HTTP url {}", Encode.forUri(request.getRequestURL().toString()));
+            LOG.trace("HTTP uri {}", Encode.forUri(request.getRequestURI()));
+            LOG.trace("HTTP path {}", Encode.forJava(request.getPathInfo()));
+            LOG.trace("HTTP content-type {}", Encode.forJava(request.getContentType()));
         }
 
         // if content type is serialized java object, then de-serialize it to a Java object
@@ -158,7 +160,7 @@ public class DefaultHttpBinding implements HttpBinding {
             String name = (String)names.nextElement();
             // there may be multiple values for the same name
             String[] values = request.getParameterValues(name);
-            LOG.trace("HTTP parameter {} = {}", name, values);
+            LOG.trace("HTTP parameter {} = {}", Encode.forJava(name), Encode.forJava(Arrays.toString(values)));
 
             if (values != null) {
                 for (String value : values) {
@@ -170,7 +172,7 @@ public class DefaultHttpBinding implements HttpBinding {
             }
         }
 
-        LOG.trace("HTTP method {} with Content-Type {}", request.getMethod(), request.getContentType());
+        LOG.trace("HTTP method {} with Content-Type {}", Encode.forJava(request.getMethod()), Encode.forJava(request.getContentType()));
         
         if (request.getMethod().equals("POST") && request.getContentType() != null
                 && request.getContentType().startsWith(HttpConstants.CONTENT_TYPE_WWW_FORM_URLENCODED)) {

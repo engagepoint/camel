@@ -92,6 +92,10 @@
       <artifactId>spring-context-support</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.owasp.encoder</groupId>
+          <artifactId>encoder</artifactId>
+      </dependency>
   </dependencies>
 
   <build>

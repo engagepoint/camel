@@ -38,6 +38,7 @@ import org.jsmpp.bean.RegisteredDelivery;
 import org.jsmpp.bean.TypeOfNumber;
 import org.jsmpp.session.DataSmResult;
 import org.jsmpp.session.SMPPSession;
+import org.owasp.encoder.Encode;
 
 public class SmppDataSmCommand extends AbstractSmppCommand {
 
@@ -73,7 +74,7 @@ public class SmppDataSmCommand extends AbstractSmppCommand {
 
         if (log.isDebugEnabled()) {
             log.debug("Sent a data short message for exchange id '{}' and message id '{}'",
-                    exchange.getExchangeId(), result.getMessageId());
+                    Encode.forJava(exchange.getExchangeId()), Encode.forJava(result.getMessageId()));
         }
 
         Message message = getResponseMessage(exchange);

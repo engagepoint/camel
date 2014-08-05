@@ -34,6 +34,7 @@ import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.IntrospectionSupport;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.ResourceHelper;
+import org.owasp.encoder.Encode;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -518,7 +519,7 @@ public class QuartzComponent extends DefaultComponent implements StartupListener
 
         if (LOG.isDebugEnabled()) {
             String name = prop.getProperty(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME);
-            LOG.debug("Creating SchedulerFactory: {} with properties: {}", name, prop);
+            LOG.debug("Creating SchedulerFactory: {} with properties: {}", Encode.forJava(name), prop);
         }
         return answer;
     }

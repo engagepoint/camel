@@ -28,6 +28,7 @@ import org.apache.camel.util.FileUtil;
 import org.apache.camel.util.ObjectHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +109,7 @@ public class OsgiClassResolver extends DefaultClassResolver {
             String name = FileUtil.stripPath(uri);
             if (path != null && name != null) {
                 for (Bundle bundle : bundleContext.getBundles()) {
-                    LOG.trace("Finding all entries in path: {} with pattern: {}", path, name);
+                    LOG.trace("Finding all entries in path: {} with pattern: {}", Encode.forJava(path), name);
                     e = bundle.findEntries(path, name, false);
                     while (e != null && e.hasMoreElements()) {
                         answer.add(e.nextElement());

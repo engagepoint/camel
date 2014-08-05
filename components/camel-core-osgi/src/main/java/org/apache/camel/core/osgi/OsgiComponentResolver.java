@@ -24,6 +24,7 @@ import org.apache.camel.util.ObjectHelper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +42,10 @@ public class OsgiComponentResolver implements ComponentResolver {
         try {
             bean = context.getRegistry().lookupByName(name);
             if (bean != null) {
-                LOG.debug("Found component: {} in registry: {}", name, bean);
+                LOG.debug("Found component: {} in registry: {}", Encode.forJava(name), Encode.forJava(bean.toString()));
             }
         } catch (Exception e) {
-            LOG.debug("Ignored error looking up bean: " + name + ". Error: " + e);
+            LOG.debug("Ignored error looking up bean: " + Encode.forJava(name) + ". Error: " + e);
         }
 
         if (bean != null) {
@@ -65,7 +66,7 @@ public class OsgiComponentResolver implements ComponentResolver {
     }
 
     protected Component getComponent(String name, CamelContext context) throws Exception {
-        LOG.trace("Finding Component: {}", name);
+        LOG.trace("Finding Component: {}", Encode.forJava(name));
         try {
             ServiceReference<?>[] refs = bundleContext.getServiceReferences(ComponentResolver.class.getName(), "(component=" + name + ")");
             if (refs != null) {

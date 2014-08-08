@@ -27,7 +27,7 @@ public final class Main {
         // do nothing here
     }
 
-    public static void main(String[] args) throws Exception {
+    /*public static void main(String[] args) throws Exception {
         org.apache.camel.spring.Main.main(args);
-    }
+    }*/
 }

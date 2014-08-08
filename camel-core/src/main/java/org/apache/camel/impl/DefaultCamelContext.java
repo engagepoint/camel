@@ -348,7 +348,7 @@ public class DefaultCamelContext extends ServiceSupport implements ModelCamelCon
                 try {
                     if (log.isDebugEnabled()) {
                         log.debug("Using ComponentResolver: {} to resolve component with name: {}",
-                                Encode.forJava(getComponentResolver().toString()), name);
+                                Encode.forJava(getComponentResolver().toString()), Encode.forJava(name));
                     }
                     component = getComponentResolver().resolveComponent(name, this);
                     if (component != null) {
@@ -364,7 +364,7 @@ public class DefaultCamelContext extends ServiceSupport implements ModelCamelCon
                     throw new RuntimeCamelException("Cannot auto create component: " + name, e);
                 }
             }
-            log.trace("getComponent({}) -> {}", name, component == null ? "null" : Encode.forJava(component.toString()));
+            log.trace("getComponent({}) -> {}", Encode.forJava(name), component == null ? "null" : Encode.forJava(component.toString()));
             return component;
         }
     }

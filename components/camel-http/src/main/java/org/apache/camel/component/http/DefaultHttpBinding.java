@@ -78,7 +78,7 @@ public class DefaultHttpBinding implements HttpBinding {
     }
 
     public void readRequest(HttpServletRequest request, HttpMessage message) {
-        LOG.trace("readRequest {}", request);
+        LOG.trace("readRequest {}", Encode.forJava(request.toString()));
         
         // lets force a parse of the body and headers
         message.getBody();
@@ -253,7 +253,8 @@ public class DefaultHttpBinding implements HttpBinding {
             // write stacktrace as plain text
             response.setContentType("text/plain");
             PrintWriter pw = response.getWriter();
-            exception.printStackTrace(pw);
+            pw.println("Error caused by " + exception.getClass());
+            LOG.error("Some unpredictable exception happend", exception);
             pw.flush();
         }
     }

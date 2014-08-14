@@ -467,9 +467,10 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
                 }
                 try {
                     Class<?> type = null;
-                    if (isValidClass(externalName)) {
-                        type = classLoader.loadClass(externalName);
+                    if (externalName.isEmpty()) {
+                        throw new ClassNotFoundException("Invalid class name [" + externalName + "]");
                     }
+                    type = ObjectHelper.loadClass(externalName, classLoader);
                     log.trace("Loaded the class: {} in classloader: {}", type, classLoader);
                     if (test.matches(type)) {
                         log.trace("Found class: {} which matches the filter in classloader: {}", type, classLoader);
@@ -506,20 +507,6 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
 
     protected void doStop() throws Exception {
         jarCache.clear();
-    }
-
-    /**
-     *      * Validate the class name against a combination of white and black
-     *      * lists to ensure that only expected behavior is produced.
-     *      * Added for passing Veracode testing
-     *      *
-     *      * @param name  the name of class to load
-     *      * @param packageNames the packages
-     *      * @return true is class is valid otherwise false
-     *
-     */
-    protected boolean isValidClass(String name) {
-        return true;
     }
 
 }

@@ -48,6 +48,9 @@ public final class FileUtil {
     private static Thread shutdownHook;
     private static boolean windowsOs = initWindowsOs();
 
+    private static final SecureRandom SUFFIX_RANDOM = new SecureRandom();
+    private static final SecureRandom PREFIX_RANDOM = new SecureRandom();
+
     private FileUtil() {
         // Utils method
     }
@@ -92,17 +95,17 @@ public final class FileUtil {
     }
 
     public static File createTempFile(String prefix, String suffix, File parentDir) throws IOException {
-        // TODO: parentDir should be mandatory
         File parent = (parentDir == null) ? getDefaultTempDir() : parentDir;
-            
+
         if (suffix == null) {
-            suffix = ".tmp";
+            suffix = "";
         }
+        suffix += Long.toString(SUFFIX_RANDOM.nextLong());
+
         if (prefix == null) {
-            prefix = "camel";
-        } else if (prefix.length() < 3) {
-            prefix = prefix + "camel";
+            prefix = "";
         }
+        prefix += Long.toString(PREFIX_RANDOM.nextLong());
 
         // create parent folder
         parent.mkdirs();

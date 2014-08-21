@@ -24,10 +24,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import javax.activation.DataHandler;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -43,10 +40,12 @@ import org.apache.camel.component.http.helper.CamelFileDataSource;
 import org.apache.camel.component.http.helper.HttpHelper;
 import org.apache.camel.converter.stream.CachedOutputStream;
 import org.apache.camel.spi.HeaderFilterStrategy;
+import org.apache.camel.tools.apt.util.Strings;
 import org.apache.camel.util.GZIPHelper;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.MessageHelper;
 import org.apache.camel.util.ObjectHelper;
+import org.apache.commons.codec.binary.StringUtils;
 import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -385,7 +384,11 @@ public class DefaultHttpBinding implements HttpBinding {
                 // set content length and encoding before we write data
                 String charset = IOHelper.getCharsetName(exchange, true);
                 final int dataByteLength = data.getBytes(charset).length;
-                response.setCharacterEncoding(charset);
+                String validCharset = charset;
+                if (!isValidHeader(validCharset)) {
+                    validCharset = removeSpecialCharacters(validCharset);
+                }
+                response.setCharacterEncoding(validCharset);
                 response.setContentLength(dataByteLength);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Writing response in non-chunked mode as plain text with content-length {} and buffer size: {}", dataByteLength, response.getBufferSize());
@@ -449,6 +452,22 @@ public class DefaultHttpBinding implements HttpBinding {
             // reade the response body from servlet request
             return HttpHelper.readResponseBodyFromServletRequest(request, httpMessage.getExchange());
         }
+    }
+
+    private String removeSpecialCharacters(String string) {
+        return string.replaceAll("[\\r\\n]", "");
+    }
+
+    private boolean isValidHeader(String header) {
+        if (header != null && !header.isEmpty()) {
+            List<String> specialCharacters = Arrays.asList("\n", "\r");
+            for (String specialCharacter : specialCharacters) {
+                if (header.contains(specialCharacter)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public boolean isUseReaderForPayload() {

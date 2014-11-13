@@ -33,6 +33,7 @@ import org.apache.camel.impl.DefaultExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.owasp.encoder.Encode;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * @version 
@@ -63,7 +64,8 @@ public class CamelServlet extends HttpServlet {
         // Is there a consumer registered for the request.
         HttpConsumer consumer = resolve(request);
         if (consumer == null) {
-            log.debug("No consumer to service request {}", encodedRequest);
+//            log.debug("No consumer to service request {}", encodedRequest);
+            log.debug("No consumer to service request {}", StringEscapeUtils.escapeJava(encodedRequest));
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }       

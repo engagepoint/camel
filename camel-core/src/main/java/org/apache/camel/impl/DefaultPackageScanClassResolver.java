@@ -52,6 +52,8 @@ import org.apache.camel.util.ServiceHelper;
 import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 
 /**
  * Default implement of {@link org.apache.camel.spi.PackageScanClassResolver}
@@ -210,10 +212,10 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
     }
 
     protected void find(PackageScanFilter test, String packageName, ClassLoader loader, Set<Class<?>> classes) {
-        if (log.isTraceEnabled()) {
-            log.trace("Searching for: {} in package: {} using classloader: {}", 
-                    new Object[]{test, Encode.forJava(packageName), loader.getClass().getName()});
-        }
+//        if (log.isTraceEnabled()) {
+//            log.trace("Searching for: {} in package: {} using classloader: {}",
+//                    new Object[]{test, Encode.forJava(packageName), loader.getClass().getName()});
+//        }
 
         Enumeration<URL> urls;
         try {
@@ -230,7 +232,7 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
             URL url = null;
             try {
                 url = urls.nextElement();
-                log.trace("URL from classloader: {}", url);
+                log.trace("URL from classloader: {}", StringEscapeUtils.escapeJava(url.toString()));
                 
                 url = customResourceLocator(url);
 
@@ -325,7 +327,7 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
      * @throws IOException is thrown by the classloader
      */
     protected Enumeration<URL> getResources(ClassLoader loader, String packageName) throws IOException {
-        log.trace("Getting resource URL for package: {} with classloader: {}", packageName, loader);
+        log.trace("Getting resource URL for package: {} with classloader: {}", StringEscapeUtils.escapeJava(packageName), StringEscapeUtils.escapeJava(loader.toString()));
         
         // If the URL is a jar, the URLClassloader.getResources() seems to require a trailing slash.  The
         // trailing slash is harmless for other URLs  
@@ -490,15 +492,15 @@ public class DefaultPackageScanClassResolver extends ServiceSupport implements P
                     found = true;
                     break;
                 } catch (ClassNotFoundException e) {
-                    if (log.isTraceEnabled()) {
-                        log.trace("Cannot find class '" + Encode.forJava(fqn) + "' in classloader: " + classLoader
-                                + ". Reason: " + e.getMessage(), e);
-                    }
+//                    if (log.isTraceEnabled()) {
+//                        log.trace("Cannot find class '" + Encode.forJava(fqn) + "' in classloader: " + classLoader
+//                                + ". Reason: " + e.getMessage(), e);
+//                    }
                 } catch (NoClassDefFoundError e) {
-                    if (log.isTraceEnabled()) {
-                        log.trace("Cannot find the class definition '" + Encode.forJava(fqn) + "' in classloader: " + classLoader
-                            + ". Reason: " + e.getMessage(), e);
-                    }
+//                    if (log.isTraceEnabled()) {
+//                        log.trace("Cannot find the class definition '" + Encode.forJava(fqn) + "' in classloader: " + classLoader
+//                            + ". Reason: " + e.getMessage(), e);
+//                    }
                 }
             }
             if (!found) {

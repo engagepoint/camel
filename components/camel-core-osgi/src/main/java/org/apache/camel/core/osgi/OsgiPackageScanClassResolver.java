@@ -27,6 +27,8 @@ import org.apache.camel.impl.DefaultPackageScanClassResolver;
 import org.apache.camel.spi.PackageScanFilter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 
 public class OsgiPackageScanClassResolver extends DefaultPackageScanClassResolver {
 
@@ -53,7 +55,7 @@ public class OsgiPackageScanClassResolver extends DefaultPackageScanClassResolve
             // Using the non-OSGi classloaders as a fallback
             // this is necessary when use JBI packaging for servicemix-camel SU
             // so that we get chance to use SU classloader to scan packages in the SU
-            log.trace("Cannot find any classes in bundles, not trying regular classloaders scanning: {}", packageName);
+            log.trace("Cannot find any classes in bundles, not trying regular classloaders scanning: {}", StringEscapeUtils.escapeJava(packageName));
             for (ClassLoader classLoader : super.getClassLoaders()) {
                 if (!isOsgiClassloader(classLoader)) {
                     find(test, packageName, classLoader, classes);

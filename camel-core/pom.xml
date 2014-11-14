@@ -33,6 +33,7 @@
 
   <properties>
     <camel.osgi.export.pkg>
+        !org.apache.camel.main.*,
         org.apache.camel.*
     </camel.osgi.export.pkg>
     <camel.osgi.import>
@@ -153,32 +154,17 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.2</version>
         <executions>
-          <execution>
-            <id>test-jar</id>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>remove-main-class</id>
-            <phase>package</phase>
-            <goals>
-                <goal>jar</goal>
-            </goals>
-            <configuration>
-                <excludes>
-                    <exclude>**/Main*.class</exclude>
-                </excludes>
-            </configuration>
-          </execution>
+            <execution>
+                <goals>
+                    <goal>test-jar</goal>
+                </goals>
+            </execution>
         </executions>
         <configuration>
-          <excludes>
-            <exclude>log4j.properties</exclude>
-          </excludes>
+            <excludes>
+                <exclude>log4j.properties</exclude>
+            </excludes>
         </configuration>
-
-
       </plugin>
 
       <plugin>
@@ -243,10 +229,10 @@
               <title>Support APIs for implementors</title>
               <packages>org.apache.camel.support.*</packages>
             </group>
-            <group>
-              <title>Main class for running Camel standalone</title>
-              <packages>org.apache.camel.main.*</packages>
-            </group>
+            <!--<group>-->
+              <!--<title>Main class for running Camel standalone</title>-->
+              <!--<packages>org.apache.camel.main.*</packages>-->
+            <!--</group>-->
             <group>
               <title>Camel Runtime</title>
               <packages>org.apache.camel.impl:org.apache.camel.impl.*</packages>
@@ -330,18 +316,18 @@
                   <title>Support APIs for implementors</title>
                   <packages>org.apache.camel.support.*</packages>
                 </group>
-                <group>
-                  <title>Main class for running Camel standalone</title>
-                  <packages>org.apache.camel.main.*</packages>
-                </group>
+                <!--<group>-->
+                  <!--<title>Main class for running Camel standalone</title>-->
+                  <!--<packages>org.apache.camel.main.*</packages>-->
+                <!--</group>-->
                 <group>
                   <title>Camel Runtime</title>
                   <packages>org.apache.camel.impl:org.apache.camel.impl.*</packages>
                 </group>
-                <group>
-                  <title>Camel Starters</title>
-                  <packages>org.apache.camel.main</packages>
-                </group>
+                <!--<group>-->
+                  <!--<title>Camel Starters</title>-->
+                  <!--<packages>org.apache.camel.main</packages>-->
+                <!--</group>-->
                 <group>
                   <title>Type conversion helper classes</title>
                   <packages>org.apache.camel.converter:org.apache.camel.converter.*</packages>

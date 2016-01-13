@@ -16,17 +16,17 @@
  */
 package org.apache.camel.util;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.googlecode.concurrentlinkedhashmap.EvictionListener;
 import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A Least Recently Used Cache.
@@ -164,7 +164,7 @@ public class LRUCache<K, V> implements Map<K, V>, EvictionListener<K, V>, Serial
                 // stop service as its evicted from cache
                 ServiceHelper.stopService(value);
             } catch (Exception e) {
-                LOG.warn("Error stopping service: " + value + ". This exception will be ignored.", e);
+                LOG.warn(String.format("Error stopping service: %s. This exception will be ignored." , value), e);
             }
         }
     }

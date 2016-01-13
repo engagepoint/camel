@@ -16,21 +16,11 @@
  */
 package org.apache.camel.util;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.camel.Channel;
-import org.apache.camel.Navigate;
-import org.apache.camel.Processor;
-import org.apache.camel.Service;
-import org.apache.camel.ShutdownableService;
-import org.apache.camel.StatefulService;
-import org.apache.camel.SuspendableService;
+import org.apache.camel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * A collection of helper methods for working with {@link Service} objects.
@@ -163,7 +153,7 @@ public final class ServiceHelper {
                 stopService(value);
             } catch (Exception e) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Caught exception stopping service: " + value, e);
+                    LOG.debug(String.format("Caught exception stopping service: %s", value), e);
                 }
                 if (firstException == null) {
                     firstException = e;
@@ -241,7 +231,7 @@ public final class ServiceHelper {
                 }
             } catch (Exception e) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Caught exception shutting down service: " + value, e);
+                    LOG.debug(String.format("Caught exception shutting down service: %s", value), e);
                 }
                 if (firstException == null) {
                     firstException = e;
@@ -274,7 +264,7 @@ public final class ServiceHelper {
                     resumeService(service);
                 } catch (Exception e) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Caught exception resuming service: " + service, e);
+                        LOG.debug(String.format("Caught exception resuming service: %s", service), e);
                     }
                     if (firstException == null) {
                         firstException = e;
@@ -345,7 +335,7 @@ public final class ServiceHelper {
                     suspendService(service);
                 } catch (Exception e) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Caught exception suspending service: " + service, e);
+                        LOG.debug(String.format("Caught exception suspending service: %s", service), e);
                     }
                     if (firstException == null) {
                         firstException = e;

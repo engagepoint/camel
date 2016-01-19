@@ -164,7 +164,8 @@ public class LRUCache<K, V> implements Map<K, V>, EvictionListener<K, V>, Serial
                 // stop service as its evicted from cache
                 ServiceHelper.stopService(value);
             } catch (Exception e) {
-                LOG.warn(String.format("Error stopping service: %s. This exception will be ignored." , value), e);
+                LOG.warn("Error stopping service: {}. ", Encode.forJava(value.toString()));
+                LOG.warn("This exception will be ignored. ", e);
             }
         }
     }

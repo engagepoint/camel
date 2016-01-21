@@ -16,9 +16,6 @@
  */
 package org.apache.camel.component.smpp;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.jsmpp.bean.NumberingPlanIndicator;
 import org.jsmpp.bean.SMSCDeliveryReceipt;
 import org.jsmpp.bean.TypeOfNumber;
@@ -26,6 +23,9 @@ import org.jsmpp.extra.SessionState;
 import org.jsmpp.session.SessionStateListener;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,7 +52,7 @@ public class SmppConfigurationTest {
         assertEquals("", configuration.getAddressRange());
         assertEquals(new Integer(5000), configuration.getEnquireLinkTimer());
         assertEquals("localhost", configuration.getHost());
-        assertEquals("password", configuration.getPassword());
+        assertEquals(null, configuration.getPassword());
         assertEquals(new Integer(2775), configuration.getPort());
         assertEquals(0x01, configuration.getPriorityFlag());
         assertEquals(0x00, configuration.getProtocolId());
@@ -164,7 +164,7 @@ public class SmppConfigurationTest {
                 + "usingSSL=false, "
                 + "enquireLinkTimer=5000, "
                 + "host=localhost, "
-                + "password=password, "
+                + "password=null, "
                 + "port=2775, "
                 + "systemId=smppclient, "
                 + "systemType=cp, "

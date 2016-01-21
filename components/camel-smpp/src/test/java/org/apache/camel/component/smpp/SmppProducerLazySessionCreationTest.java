@@ -48,6 +48,7 @@ public class SmppProducerLazySessionCreationTest {
     @Before
     public void setUp() {
         configuration = new SmppConfiguration();
+        configuration.setPassword("password");
         configuration.setLazySessionCreation(true);
         endpoint = createMock(SmppEndpoint.class);
         session = createMock(SMPPSession.class);

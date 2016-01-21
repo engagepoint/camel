@@ -48,6 +48,7 @@ public class SmppConsumerTest {
     @Before
     public void setUp() {
         configuration = new SmppConfiguration();
+        configuration.setPassword("password");
         endpoint = createMock(SmppEndpoint.class);
         processor = createMock(Processor.class);
         session = createMock(SMPPSession.class);

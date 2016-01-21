@@ -36,7 +36,7 @@ public class SmppConfiguration implements Cloneable {
     private String host = "localhost";
     private Integer port = Integer.valueOf(2775);
     private String systemId = "smppclient";
-    private String password = "password";
+    private String password;
     private String systemType = "cp";
     private byte dataCoding = (byte) 0;
     private byte alphabet = Alphabet.ALPHA_DEFAULT.value();

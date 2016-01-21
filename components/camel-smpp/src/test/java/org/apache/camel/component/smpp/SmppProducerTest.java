@@ -16,8 +16,6 @@
  */
 package org.apache.camel.component.smpp;
 
-import java.io.IOException;
-
 import org.apache.camel.Exchange;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.bean.NumberingPlanIndicator;
@@ -28,11 +26,11 @@ import org.jsmpp.session.SessionStateListener;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.verify;
+import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.assertSame;
 
 /**
@@ -50,6 +48,7 @@ public class SmppProducerTest {
     @Before
     public void setUp() {
         configuration = new SmppConfiguration();
+        configuration.setPassword("password");
         endpoint = createMock(SmppEndpoint.class);
         session = createMock(SMPPSession.class);
         

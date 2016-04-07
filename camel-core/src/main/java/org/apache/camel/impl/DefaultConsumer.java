@@ -30,6 +30,7 @@ import org.apache.camel.util.AsyncProcessorConverterHelper;
 import org.apache.camel.util.ServiceHelper;
 import org.apache.camel.util.URISupport;
 import org.apache.camel.util.UnitOfWorkHelper;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,12 +132,12 @@ public class DefaultConsumer extends ServiceSupport implements Consumer, RouteAw
     }
 
     protected void doStop() throws Exception {
-        log.debug("Stopping consumer: {}", this);
+        log.debug("Stopping consumer: {}", Encode.forJava(this.toString()));
         ServiceHelper.stopServices(processor);
     }
 
     protected void doStart() throws Exception {
-        log.debug("Starting consumer: {}", this);
+        log.debug("Starting consumer: {}", Encode.forJava(this.toString()));
         ServiceHelper.startServices(processor);
     }
 

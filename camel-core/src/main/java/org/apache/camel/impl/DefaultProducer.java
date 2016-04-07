@@ -22,6 +22,7 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.Producer;
 import org.apache.camel.support.ServiceSupport;
 import org.apache.camel.util.URISupport;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,18 +70,18 @@ public abstract class DefaultProducer extends ServiceSupport implements Producer
     protected void doStart() throws Exception {
         // log at debug level for singletons, for prototype scoped log at trace level to not spam logs
         if (isSingleton()) {
-            log.debug("Starting producer: {}", this);
+            log.debug("Starting producer: {}", Encode.forJava(this.toString()));
         } else {
-            log.trace("Starting producer: {}", this);
+            log.trace("Starting producer: {}", Encode.forJava(this.toString()));
         }
     }
 
     protected void doStop() throws Exception {
         // log at debug level for singletons, for prototype scoped log at trace level to not spam logs
         if (isSingleton()) {
-            log.debug("Stopping producer: {}", this);
+            log.debug("Stopping producer: {}", Encode.forJava(this.toString()));
         } else {
-            log.trace("Stopping producer: {}", this);
+            log.trace("Stopping producer: {}", Encode.forJava(this.toString()));
         }
     }
 }

@@ -17,6 +17,7 @@
 package org.apache.camel.util;
 
 import org.apache.camel.*;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,12 +123,12 @@ public final class ServiceHelper {
     public static void stopService(Object value) throws Exception {
         if (isStopped(value)) {
             // only stop service if not already stopped
-            LOG.trace("Service already stopped: {}", value);
+            LOG.trace("Service already stopped: {}", Encode.forJava(value.toString()));
             return;
         }
         if (value instanceof Service) {
             Service service = (Service)value;
-            LOG.trace("Stopping service {}", value);
+            LOG.trace("Stopping service {}", Encode.forJava(value.toString()));
             service.stop();
         } else if (value instanceof Collection) {
             stopServices((Collection<?>)value);
@@ -226,12 +227,12 @@ public final class ServiceHelper {
                 // then try to shutdown
                 if (value instanceof ShutdownableService) {
                     ShutdownableService service = (ShutdownableService)value;
-                    LOG.trace("Shutting down service: {}", service);
+                    LOG.trace("Shutting down service: {}", Encode.forJava(service.toString()));
                     service.shutdown();
                 }
             } catch (Exception e) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug(String.format("Caught exception shutting down service: %s", value), e);
+                    LOG.debug(String.format("Caught exception shutting down service: %s", Encode.forJava(value.toString())), e);
                 }
                 if (firstException == null) {
                     firstException = e;
@@ -302,7 +303,7 @@ public final class ServiceHelper {
         if (service instanceof SuspendableService) {
             SuspendableService ss = (SuspendableService) service;
             if (ss.isSuspended()) {
-                LOG.debug("Resuming service {}", service);
+                LOG.debug("Resuming service {}", Encode.forJava(service.toString()));
                 ss.resume();
                 return true;
             } else {
@@ -373,7 +374,7 @@ public final class ServiceHelper {
         if (service instanceof SuspendableService) {
             SuspendableService ss = (SuspendableService) service;
             if (!ss.isSuspended()) {
-                LOG.trace("Suspending service {}", service);
+                LOG.trace("Suspending service {}", Encode.forJava(service.toString()));
                 ss.suspend();
                 return true;
             } else {

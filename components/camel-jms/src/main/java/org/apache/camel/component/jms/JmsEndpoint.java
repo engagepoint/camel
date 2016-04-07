@@ -50,6 +50,7 @@ import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriPath;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.UnsafeUriCharactersEncoder;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
@@ -458,7 +459,7 @@ public class JmsEndpoint extends DefaultEndpoint implements HeaderFilterStrategy
         if (running <= 0) {
             super.stop();
         } else {
-            log.trace("There are still {} running message listeners. Cannot stop endpoint {}", running, this);
+            log.trace("There are still {} running message listeners. Cannot stop endpoint {}", running, Encode.forJava(this.toString()));
         }
     }
 
@@ -468,7 +469,7 @@ public class JmsEndpoint extends DefaultEndpoint implements HeaderFilterStrategy
         if (running <= 0) {
             super.shutdown();
         } else {
-            log.trace("There are still {} running message listeners. Cannot shutdown endpoint {}", running, this);
+            log.trace("There are still {} running message listeners. Cannot shutdown endpoint {}", running, Encode.forJava(this.toString()));
         }
     }
 

@@ -16,18 +16,19 @@
  */
 package org.apache.camel.impl;
 
+import org.apache.camel.spi.ServicePool;
+import org.apache.camel.support.ServiceSupport;
+import org.apache.camel.util.ServiceHelper;
+import org.owasp.encoder.Encode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.apache.camel.spi.ServicePool;
-import org.apache.camel.support.ServiceSupport;
-import org.apache.camel.util.ServiceHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation to inherit for a basic service pool.
@@ -102,11 +103,11 @@ public abstract class DefaultServicePool<Key, Service> extends ServiceSupport im
     }
 
     protected void doStart() throws Exception {
-        log.debug("Starting service pool: {}", this);
+        log.debug("Starting service pool: {}", Encode.forJava(this.toString()));
     }
 
     protected void doStop() throws Exception {
-        log.debug("Stopping service pool: {}", this);
+        log.debug("Stopping service pool: {}", Encode.forJava(this.toString()));
         for (BlockingQueue<Service> entry : pool.values()) {
             Collection<Service> values = new ArrayList<Service>();
             entry.drainTo(values);

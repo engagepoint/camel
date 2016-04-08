@@ -16,15 +16,11 @@
  */
 package org.apache.camel.issues;
 
-import java.util.Map;
-
-import org.apache.camel.Consumer;
-import org.apache.camel.ContextTestSupport;
-import org.apache.camel.Endpoint;
-import org.apache.camel.Processor;
-import org.apache.camel.Producer;
+import org.apache.camel.*;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.camel.impl.DefaultEndpoint;
+
+import java.util.Map;
 
 /**
  * CAMEL-4857 issue test
@@ -60,6 +56,11 @@ public class Camel4857UriIssueTest extends ContextTestSupport {
 
         public String getUri() {
             return uri;
+        }
+
+        @Override
+        protected String createEndpointUri() {
+            return "Camel4857UriIssueTest.MyEndpoint";
         }
     }
 

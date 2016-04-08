@@ -96,5 +96,9 @@ public class TestEndpointTest extends ContextTestSupport {
             return true;
         }
 
+        @Override
+        protected String createEndpointUri() {
+            return "MyEndpoint";
+        }
     }
 }

@@ -16,22 +16,22 @@
  */
 package org.apache.camel.component.xslt;
 
-import java.io.IOException;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-
 import org.apache.camel.Component;
 import org.apache.camel.Exchange;
 import org.apache.camel.api.management.ManagedAttribute;
 import org.apache.camel.api.management.ManagedOperation;
 import org.apache.camel.api.management.ManagedResource;
 import org.apache.camel.builder.xml.XsltBuilder;
-import org.apache.camel.component.timer.TimerConsumer;
 import org.apache.camel.impl.ProcessorEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
 
 @ManagedResource(description = "Managed XsltEndpoint")
 @UriEndpoint(scheme = "xslt")
@@ -81,7 +81,7 @@ public class XsltEndpoint extends ProcessorEndpoint {
 
     public XsltEndpoint findOrCreateEndpoint(String uri, String newResourceUri) {
         String newUri = uri.replace(resourceUri, newResourceUri);
-        LOG.trace("Getting endpoint with URI: {}", newUri);
+        LOG.trace("Getting endpoint with URI: {}", Encode.forJava(newUri));
         return getCamelContext().getEndpoint(newUri, XsltEndpoint.class);
     }
 
@@ -104,7 +104,7 @@ public class XsltEndpoint extends ProcessorEndpoint {
      * @throws IOException is thrown if error loading resource
      */
     protected void loadResource(String resourceUri) throws TransformerException, IOException {
-        LOG.trace("{} loading schema resource: {}", this, resourceUri);
+        LOG.trace("{} loading schema resource: {}", Encode.forJava(this.toString()), Encode.forJava(resourceUri));
         Source source = xslt.getUriResolver().resolve(resourceUri, null);
         if (source == null) {
             throw new IOException("Cannot load schema resource " + resourceUri);

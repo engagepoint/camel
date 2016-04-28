@@ -16,19 +16,6 @@
  */
 package org.apache.camel.impl;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.NamedNode;
 import org.apache.camel.StaticService;
@@ -49,8 +36,12 @@ import org.apache.camel.util.URISupport;
 import org.apache.camel.util.concurrent.CamelThreadFactory;
 import org.apache.camel.util.concurrent.SizedScheduledExecutorService;
 import org.apache.camel.util.concurrent.ThreadHelper;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @version 
@@ -114,7 +105,7 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
         threadPoolProfiles.remove(defaultThreadPoolProfileId);
         defaultThreadPoolProfile.addDefaults(defaultProfile);
 
-        LOG.info("Using custom DefaultThreadPoolProfile: " + defaultThreadPoolProfile);
+        LOG.info("Using custom DefaultThreadPoolProfile: " + Encode.forJava(defaultThreadPoolProfile.toString()));
 
         this.defaultThreadPoolProfileId = defaultThreadPoolProfile.getId();
         defaultThreadPoolProfile.setDefaultProfile(true);
@@ -187,7 +178,7 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
         ExecutorService executorService = threadPoolFactory.newThreadPool(profile, threadFactory);
         onThreadPoolCreated(executorService, source, profile.getId());
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Created new ThreadPool for source: {} with name: {}. -> {}", new Object[]{source, sanitizedName, executorService});
+            LOG.debug("Created new ThreadPool for source: {} with name: {}. -> {}", new Object[]{Encode.forJava(source.toString()), Encode.forJava(sanitizedName), Encode.forJava(executorService.toString())});
         }
 
         return executorService;
@@ -213,7 +204,7 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
         onThreadPoolCreated(answer, source, null);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Created new CachedThreadPool for source: {} with name: {}. -> {}", new Object[]{source, sanitizedName, answer});
+            LOG.debug("Created new CachedThreadPool for source: {} with name: {}. -> {}", new Object[]{Encode.forJava(source.toString()), Encode.forJava(sanitizedName), Encode.forJava(answer.toString())});
         }
         return answer;
     }
@@ -240,7 +231,7 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
         onThreadPoolCreated(answer, source, null);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Created new ScheduledThreadPool for source: {} with name: {}. -> {}", new Object[]{source, sanitizedName, answer});
+            LOG.debug("Created new ScheduledThreadPool for source: {} with name: {}. -> {}", new Object[]{Encode.forJava(source.toString()), Encode.forJava(sanitizedName), Encode.forJava(answer.toString())});
         }
         return answer;
     }
@@ -292,23 +283,23 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
         if (!executorService.isShutdown()) {
             StopWatch watch = new StopWatch();
 
-            LOG.trace("Shutdown of ExecutorService: {} with await termination: {} millis", executorService, shutdownAwaitTermination);
+            LOG.trace("Shutdown of ExecutorService: {} with await termination: {} millis", Encode.forJava(executorService.toString()), shutdownAwaitTermination);
             executorService.shutdown();
 
             if (shutdownAwaitTermination > 0) {
                 try {
                     if (!awaitTermination(executorService, shutdownAwaitTermination)) {
                         warned = true;
-                        LOG.warn("Forcing shutdown of ExecutorService: {} due first await termination elapsed.", executorService);
+                        LOG.warn("Forcing shutdown of ExecutorService: {} due first await termination elapsed.", Encode.forJava(executorService.toString()));
                         executorService.shutdownNow();
                         // we are now shutting down aggressively, so wait to see if we can completely shutdown or not
                         if (!awaitTermination(executorService, shutdownAwaitTermination)) {
-                            LOG.warn("Cannot completely force shutdown of ExecutorService: {} due second await termination elapsed.", executorService);
+                            LOG.warn("Cannot completely force shutdown of ExecutorService: {} due second await termination elapsed.", Encode.forJava(executorService.toString()));
                         }
                     }
                 } catch (InterruptedException e) {
                     warned = true;
-                    LOG.warn("Forcing shutdown of ExecutorService: {} due interrupted.", executorService);
+                    LOG.warn("Forcing shutdown of ExecutorService: {} due interrupted.", Encode.forJava(executorService.toString()));
                     // we were interrupted during shutdown, so force shutdown
                     executorService.shutdownNow();
                 }
@@ -317,10 +308,10 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
             // if we logged at WARN level, then report at INFO level when we are complete so the end user can see this in the log
             if (warned) {
                 LOG.info("Shutdown of ExecutorService: {} is shutdown: {} and terminated: {} took: {}.",
-                        new Object[]{executorService, executorService.isShutdown(), executorService.isTerminated(), TimeUtils.printDuration(watch.taken())});
+                        new Object[]{Encode.forJava(executorService.toString()), executorService.isShutdown(), executorService.isTerminated(), TimeUtils.printDuration(watch.taken())});
             } else if (LOG.isDebugEnabled()) {
                 LOG.debug("Shutdown of ExecutorService: {} is shutdown: {} and terminated: {} took: {}.",
-                    new Object[]{executorService, executorService.isShutdown(), executorService.isTerminated(), TimeUtils.printDuration(watch.taken())});
+                    new Object[]{Encode.forJava(executorService.toString()), executorService.isShutdown(), executorService.isTerminated(), TimeUtils.printDuration(watch.taken())});
             }
         }
 
@@ -357,14 +348,14 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
         if (!executorService.isShutdown()) {
             if (failSafe) {
                 // log as warn, as we shutdown as fail-safe, so end user should see more details in the log.
-                LOG.warn("Forcing shutdown of ExecutorService: {}", executorService);
+                LOG.warn("Forcing shutdown of ExecutorService: {}", Encode.forJava(executorService.toString()));
             } else {
-                LOG.debug("Forcing shutdown of ExecutorService: {}", executorService);
+                LOG.debug("Forcing shutdown of ExecutorService: {}", Encode.forJava(executorService.toString()));
             }
             answer = executorService.shutdownNow();
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Shutdown of ExecutorService: {} is shutdown: {} and terminated: {}.",
-                        new Object[]{executorService, executorService.isShutdown(), executorService.isTerminated()});
+                        new Object[]{Encode.forJava(executorService.toString()), executorService.isShutdown(), executorService.isTerminated()});
             }
         }
 
@@ -399,7 +390,7 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
             if (executorService.awaitTermination(interval, TimeUnit.MILLISECONDS)) {
                 done = true;
             } else {
-                LOG.info("Waited {} for ExecutorService: {} to terminate...", TimeUtils.printDuration(watch.taken()), executorService);
+                LOG.info("Waited {} for ExecutorService: {} to terminate...", TimeUtils.printDuration(watch.taken()), Encode.forJava(executorService.toString()));
                 // recalculate interval
                 interval = Math.min(2000, shutdownAwaitTermination - watch.taken());
             }
@@ -450,7 +441,7 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
                 } catch (Throwable e) {
                     // only log if something goes wrong as we want to shutdown them all
                     LOG.warn("Error occurred during shutdown of ExecutorService: "
-                            + executorService + ". This exception will be ignored.", e);
+                            + Encode.forJava(executorService.toString()) + ". This exception will be ignored.", e);
                 }
             }
         }
@@ -459,7 +450,7 @@ public class DefaultExecutorServiceManager extends ServiceSupport implements Exe
         if (!forced.isEmpty()) {
             LOG.warn("Forced shutdown of {} ExecutorService's which has not been shutdown properly (acting as fail-safe)", forced.size());
             for (ExecutorService executorService : forced) {
-                LOG.warn("  forced -> {}", executorService);
+                LOG.warn("  forced -> {}", Encode.forJava(executorService.toString()));
             }
         }
         forced.clear();

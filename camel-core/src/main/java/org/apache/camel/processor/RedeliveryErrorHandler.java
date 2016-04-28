@@ -16,33 +16,20 @@
  */
 package org.apache.camel.processor;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.camel.AsyncCallback;
-import org.apache.camel.AsyncProcessor;
-import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
-import org.apache.camel.Message;
-import org.apache.camel.Predicate;
-import org.apache.camel.Processor;
+import org.apache.camel.*;
 import org.apache.camel.model.OnExceptionDefinition;
 import org.apache.camel.spi.ExchangeFormatter;
 import org.apache.camel.spi.ShutdownPrepared;
 import org.apache.camel.spi.SubUnitOfWorkCallback;
 import org.apache.camel.spi.UnitOfWork;
-import org.apache.camel.util.AsyncProcessorConverterHelper;
-import org.apache.camel.util.AsyncProcessorHelper;
-import org.apache.camel.util.CamelContextHelper;
+import org.apache.camel.util.*;
 import org.apache.camel.util.CamelLogger;
-import org.apache.camel.util.EventHelper;
-import org.apache.camel.util.ExchangeHelper;
-import org.apache.camel.util.MessageHelper;
-import org.apache.camel.util.ObjectHelper;
-import org.apache.camel.util.ServiceHelper;
+import org.owasp.encoder.Encode;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Base redeliverable error handler that also supports a final dead letter queue in case
@@ -116,7 +103,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
             deliverToOnRedeliveryProcessor(exchange, data);
 
             if (log.isTraceEnabled()) {
-                log.trace("Redelivering exchangeId: {} -> {} for Exchange: {}", new Object[]{exchange.getExchangeId(), outputAsync, exchange});
+                log.trace("Redelivering exchangeId: {} -> {} for Exchange: {}", new Object[]{exchange.getExchangeId(), Encode.forJava(outputAsync.toString()), Encode.forJava(exchange.toString())});
             }
 
             // emmit event we are doing redelivery
@@ -267,7 +254,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
     @Override
     public void prepareShutdown(boolean forced) {
         // prepare for shutdown, eg do not allow redelivery if configured
-        log.trace("Prepare shutdown on error handler {}", this);
+        log.trace("Prepare shutdown on error handler {}", Encode.forJava(this.toString()));
         preparingShutdown = true;
     }
 
@@ -294,7 +281,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
 
             // can we still run
             if (!isRunAllowed(data)) {
-                log.trace("Run not allowed, will reject executing exchange: {}", exchange);
+                log.trace("Run not allowed, will reject executing exchange: {}", Encode.forJava(exchange.toString()));
                 if (exchange.getException() == null) {
                     exchange.setException(new RejectedExecutionException());
                 }
@@ -469,7 +456,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
     protected void processAsyncErrorHandler(final Exchange exchange, final AsyncCallback callback, final RedeliveryData data) {
         // can we still run
         if (!isRunAllowed(data)) {
-            log.trace("Run not allowed, will reject executing exchange: {}", exchange);
+            log.trace("Run not allowed, will reject executing exchange: {}", Encode.forJava(exchange.toString()));
             if (exchange.getException() == null) {
                 exchange.setException(new RejectedExecutionException());
             }
@@ -758,7 +745,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
 
         if (log.isTraceEnabled()) {
             log.trace("Redelivery processor {} is processing Exchange: {} before its redelivered",
-                    data.onRedeliveryProcessor, exchange);
+                    Encode.forJava(data.onRedeliveryProcessor.toString()), Encode.forJava(exchange.toString()));
         }
 
         // run this synchronously as its just a Processor
@@ -824,7 +811,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
             // reset cached streams so they can be read again
             MessageHelper.resetStreamCache(exchange.getIn());
 
-            log.trace("Failure processor {} is processing Exchange: {}", processor, exchange);
+            log.trace("Failure processor {} is processing Exchange: {}", Encode.forJava(processor.toString()), Encode.forJava(exchange.toString()));
 
             // store the last to endpoint as the failure endpoint
             exchange.setProperty(Exchange.FAILURE_ENDPOINT, exchange.getProperty(Exchange.TO_ENDPOINT));
@@ -838,7 +825,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
             AsyncProcessor afp = AsyncProcessorConverterHelper.convert(processor);
             sync = afp.process(exchange, new AsyncCallback() {
                 public void done(boolean sync) {
-                    log.trace("Failure processor done: {} processing Exchange: {}", processor, exchange);
+                    log.trace("Failure processor done: {} processing Exchange: {}", Encode.forJava(processor.toString()), Encode.forJava(exchange.toString()));
                     try {
                         prepareExchangeAfterFailure(exchange, data, shouldHandle, shouldContinue);
                         // fire event as we had a failure processor to handle it, which there is a event for
@@ -896,14 +883,14 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
         }
 
         if (shouldHandle) {
-            log.trace("This exchange is handled so its marked as not failed: {}", exchange);
+            log.trace("This exchange is handled so its marked as not failed: {}", Encode.forJava(exchange.toString()));
             exchange.setProperty(Exchange.ERRORHANDLER_HANDLED, Boolean.TRUE);
         } else if (shouldContinue) {
-            log.trace("This exchange is continued: {}", exchange);
+            log.trace("This exchange is continued: {}", Encode.forJava(exchange.toString()));
             // okay we want to continue then prepare the exchange for that as well
             prepareExchangeForContinue(exchange, data);
         } else {
-            log.trace("This exchange is not handled or continued so its marked as failed: {}", exchange);
+            log.trace("This exchange is not handled or continued so its marked as failed: {}", Encode.forJava(exchange.toString()));
             // exception not handled, put exception back in the exchange
             exchange.setProperty(Exchange.ERRORHANDLER_HANDLED, Boolean.FALSE);
             exchange.setException(exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class));
@@ -1015,14 +1002,14 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
         // if marked as rollback only then do not continue/redeliver
         boolean exhausted = exchange.getProperty(Exchange.REDELIVERY_EXHAUSTED, false, Boolean.class);
         if (exhausted) {
-            log.trace("This exchange is marked as redelivery exhausted: {}", exchange);
+            log.trace("This exchange is marked as redelivery exhausted: {}", Encode.forJava(exchange.toString()));
             return true;
         }
 
         // if marked as rollback only then do not continue/redeliver
         boolean rollbackOnly = exchange.getProperty(Exchange.ROLLBACK_ONLY, false, Boolean.class);
         if (rollbackOnly) {
-            log.trace("This exchange is marked as rollback only, so forcing it to be exhausted: {}", exchange);
+            log.trace("This exchange is marked as rollback only, so forcing it to be exhausted: {}", Encode.forJava(exchange.toString()));
             return true;
         }
         // its the first original call so continue
@@ -1156,7 +1143,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
         // determine if redeliver is enabled or not
         redeliveryEnabled = determineIfRedeliveryIsEnabled();
         if (log.isDebugEnabled()) {
-            log.debug("Redelivery enabled: {} on error handler: {}", redeliveryEnabled, this);
+            log.debug("Redelivery enabled: {} on error handler: {}", redeliveryEnabled, Encode.forJava(this.toString()));
         }
 
         // we only need thread pool if redelivery is enabled
@@ -1166,7 +1153,7 @@ public abstract class RedeliveryErrorHandler extends ErrorHandlerSupport impleme
                 executorService = camelContext.getErrorHandlerExecutorService();
             }
             if (log.isTraceEnabled()) {
-                log.trace("Using ExecutorService: {} for redeliveries on error handler: {}", executorService, this);
+                log.trace("Using ExecutorService: {} for redeliveries on error handler: {}", executorService, Encode.forJava(this.toString()));
             }
         }
 

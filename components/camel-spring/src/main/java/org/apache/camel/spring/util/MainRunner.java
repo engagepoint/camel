@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +54,10 @@ public class MainRunner implements InitializingBean, Runnable {
         } catch (NoSuchMethodException e) {
             LOG.error("Class: " + name(main) + " does not have a main method: " + e, e);
         } catch (IllegalAccessException e) {
-            LOG.error("Failed to run: " + this + ". Reason: " + e, e);
+            LOG.error("Failed to run: " + Encode.forJava(this.toString()) + ". Reason: " + e, e);
         } catch (InvocationTargetException e) {
             Throwable throwable = e.getTargetException();
-            LOG.error("Failed to run: " + this + ". Reason: " + throwable, throwable);
+            LOG.error("Failed to run: " + Encode.forJava(this.toString()) + ". Reason: " + throwable, throwable);
         }
     }
 

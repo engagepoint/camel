@@ -16,23 +16,7 @@
  */
 package org.apache.camel.component.seda;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-
-import org.apache.camel.Component;
-import org.apache.camel.Consumer;
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.MultipleConsumersSupport;
-import org.apache.camel.PollingConsumer;
-import org.apache.camel.Processor;
-import org.apache.camel.Producer;
-import org.apache.camel.WaitForTaskToComplete;
+import org.apache.camel.*;
 import org.apache.camel.api.management.ManagedAttribute;
 import org.apache.camel.api.management.ManagedOperation;
 import org.apache.camel.api.management.ManagedResource;
@@ -45,8 +29,17 @@ import org.apache.camel.util.EndpointHelper;
 import org.apache.camel.util.MessageHelper;
 import org.apache.camel.util.ServiceHelper;
 import org.apache.camel.util.URISupport;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
 
 /**
  * An implementation of the <a
@@ -157,7 +150,7 @@ public class SedaEndpoint extends DefaultEndpoint implements BrowsableEndpoint, 
                 QueueReference ref = getComponent().getOrCreateQueue(this, size, isMultipleConsumers(), queueFactory);
                 queue = ref.getQueue();
                 String key = getComponent().getQueueKey(getEndpointUri());
-                LOG.info("Endpoint {} is using shared queue: {} with size: {}", new Object[]{this, key, ref.getSize() !=  null ? ref.getSize() : Integer.MAX_VALUE});
+                LOG.info("Endpoint {} is using shared queue: {} with size: {}", new Object[]{Encode.forJava(this.toString()), Encode.forJava(key), ref.getSize() !=  null ? ref.getSize() : Integer.MAX_VALUE});
                 // and set the size we are using
                 if (ref.getSize() != null) {
                     setSize(ref.getSize());
@@ -165,7 +158,7 @@ public class SedaEndpoint extends DefaultEndpoint implements BrowsableEndpoint, 
             } else {
                 // fallback and create queue (as this endpoint has no component)
                 queue = createQueue();
-                LOG.info("Endpoint {} is using queue: {} with size: {}", new Object[]{this, getEndpointUri(), getSize()});
+                LOG.info("Endpoint {} is using queue: {} with size: {}", new Object[]{Encode.forJava(this.toString()), Encode.forJava(getEndpointUri()), getSize()});
             }
         }
         return queue;
@@ -183,7 +176,7 @@ public class SedaEndpoint extends DefaultEndpoint implements BrowsableEndpoint, 
         String key = getComponent().getQueueKey(getEndpointUri());
         QueueReference ref =  getComponent().getQueueReference(key);
         if (ref == null) {
-            LOG.warn("There was no queue reference for the endpoint {0}", getEndpointUri());
+            LOG.warn("There was no queue reference for the endpoint {0}", Encode.forJava(getEndpointUri()));
         }
         return ref;
     }

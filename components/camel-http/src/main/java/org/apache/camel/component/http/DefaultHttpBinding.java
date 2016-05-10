@@ -16,39 +16,28 @@
  */
 package org.apache.camel.component.http;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.net.URLDecoder;
-import java.util.*;
-import javax.activation.DataHandler;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.camel.Endpoint;
-import org.apache.camel.Exchange;
-import org.apache.camel.InvalidPayloadException;
-import org.apache.camel.Message;
-import org.apache.camel.RuntimeCamelException;
-import org.apache.camel.StreamCache;
+import org.apache.camel.*;
 import org.apache.camel.component.http.helper.CamelFileDataSource;
 import org.apache.camel.component.http.helper.HttpHelper;
 import org.apache.camel.converter.stream.CachedOutputStream;
 import org.apache.camel.spi.HeaderFilterStrategy;
-import org.apache.camel.tools.apt.util.Strings;
 import org.apache.camel.util.GZIPHelper;
 import org.apache.camel.util.IOHelper;
 import org.apache.camel.util.MessageHelper;
 import org.apache.camel.util.ObjectHelper;
-import org.apache.commons.codec.binary.StringUtils;
 import org.owasp.encoder.Encode;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.errors.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.activation.DataHandler;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.*;
 
 /**
  * Binding between {@link HttpMessage} and {@link HttpServletResponse}.
@@ -61,6 +50,7 @@ public class DefaultHttpBinding implements HttpBinding {
     private boolean useReaderForPayload;
     private HeaderFilterStrategy headerFilterStrategy = new HttpHeaderFilterStrategy();
     private HttpEndpoint endpoint;
+    private static final String BINARY_VALIDATOR_CONTEXT = "DefaultHttpBinding.doWriteDirectResponse:Binary";
 
     @Deprecated
     public DefaultHttpBinding() {
@@ -360,7 +350,19 @@ public class DefaultHttpBinding implements HttpBinding {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("Streaming (direct) response in non-chunked mode with content-length {}");
                         }
-                        ByteArrayOutputStream bos = (ByteArrayOutputStream) current;
+                        is.reset();
+                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                        int nRead;
+                        byte[] data = new byte[16384];
+                        while ((nRead = is.read(data, 0, data.length)) != -1) {
+                            buffer.write(data, 0, nRead);
+                        }
+                        buffer.flush();
+                        byte[] content = buffer.toByteArray();
+                        byte[] validContent = ESAPI.validator().getValidFileContent(BINARY_VALIDATOR_CONTEXT,
+                                content, content.length, true);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        bos.write(validContent);
                         bos.writeTo(os);
                     } else {
                         if (LOG.isDebugEnabled()) {
@@ -368,6 +370,8 @@ public class DefaultHttpBinding implements HttpBinding {
                         }
                         copyStream(stream.getInputStream(), os, len);
                     }
+                } catch (ValidationException e) {
+                    throw new IOException(e);
                 } finally {
                     IOHelper.close(is, os);
                 }

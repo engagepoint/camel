@@ -13,7 +13,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -49,7 +48,7 @@ public class DefaultHttpBindingTest {
 
     @Test
     public void testDoWriteDirectResponseSuccess() throws IOException {
-        message.setBody(BODY_SIZE_60.getBytes(StandardCharsets.UTF_8));
+        message.setBody(BODY_SIZE_60.getBytes("UTF-8"));
         binding.doWriteDirectResponse(message, response, exchange);
         assertEquals(BODY_SIZE_60, testOutputStream.toString());
     }
@@ -57,7 +56,7 @@ public class DefaultHttpBindingTest {
     // Upload file max size is configured by HttpUtilities.MaxUploadFileBytes in .esapi/ESAPI.properties
     @Test(expected = IOException.class)
     public void testDoWriteDirectResponseInputExceedsMaxFileSize() throws IOException {
-        message.setBody(BODY_SIZE_80.getBytes(StandardCharsets.UTF_8));
+        message.setBody(BODY_SIZE_80.getBytes("UTF-8"));
         binding.doWriteDirectResponse(message, response, exchange);
         assertEquals(BODY_SIZE_80, testOutputStream.toString());
     }

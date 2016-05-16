@@ -39,6 +39,7 @@ import org.apache.camel.spi.InterceptStrategy;
 import org.apache.camel.spi.RouteContext;
 import org.apache.camel.util.OrderedComparator;
 import org.apache.camel.util.ServiceHelper;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,7 +175,7 @@ public class DefaultChannel extends CamelInternalProcessor implements ModelChann
         // the definition to wrap should be the fine grained,
         // so if a child is set then use it, if not then its the original output used
         ProcessorDefinition<?> targetOutputDef = childDefinition != null ? childDefinition : outputDefinition;
-        LOG.debug("Initialize channel for target: '{}'", targetOutputDef);
+        LOG.debug("Initialize channel for target: '{}'", Encode.forJava(targetOutputDef.toString()));
 
         // fix parent/child relationship. This will be the case of the routes has been
         // defined using XML DSL or end user may have manually assembled a route from the model.

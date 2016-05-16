@@ -319,7 +319,7 @@ public abstract class ProcessorDefinition<Type extends ProcessorDefinition<Type>
             // set error handler on channel
             channel.setErrorHandler(errorHandler);
         } else {
-            log.debug("{} is configured to not inheritErrorHandler.", this);
+            log.debug("{} is configured to not inheritErrorHandler.", Encode.forJava(this.toString()));
         }
     }
 
